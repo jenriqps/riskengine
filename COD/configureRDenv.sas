@@ -13,6 +13,7 @@
 
 * We add the macro that contains the includes to the macro valuation methods and functions;
 %include "&rootcod./macros/interpo.sas";
+%include "&rootcod./macros/interpolar.sas";
 %include "&rootcod./macros/LstMthsDy.sas";
 %include "&rootcod./macros/FWD_Rate.sas";
 %include "&rootcod./macros/NoLabUS.sas";
