@@ -26,7 +26,7 @@ proc risk;
 			method = covariance
 			interval = weekday
 			seed = 54321
-			ndraw = 1000
+			ndraw = 1007
 			generator = pseudo
 			horizon = &h.;
 		simulation model_sim
@@ -35,7 +35,7 @@ proc risk;
 			interval = weekday
 			errmod = normal
 			seed = 12345
-			ndraw = 1000
+			ndraw = 1007
 			generator = pseudo
 			horizon = &h.;
 	env save;

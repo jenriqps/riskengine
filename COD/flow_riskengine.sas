@@ -122,8 +122,44 @@ proc printto;
 run;
 
 proc sql;
-	select var
+	select
+	resultName
+	, MtM
+	, N 
+	, var
+	, var_l
+	, var_u
+	, varpct
+	, varpct_l
+	, varpct_u
+	, es
 	from FRMRDRSK.SIMSTAT
 	;
 quit;
 
+/* Visualization */
+
+ods graphics / reset width=6.4in height=4.8in imagemap noborder;
+
+proc sort data=FRMRDRSK.SIMVALUE out=_HistogramTaskData;
+	by AnalysisName;
+run;
+
+proc sgplot data=_HistogramTaskData;
+	by AnalysisName;
+	histogram Value /;
+	yaxis grid;
+run;
+
+proc sgplot data=_HistogramTaskData;
+	by AnalysisName;
+	histogram pl /;
+	yaxis grid;
+run;
+
+
+ods graphics / reset;
+
+proc datasets library=WORK noprint;
+	delete _HistogramTaskData;
+	run;
