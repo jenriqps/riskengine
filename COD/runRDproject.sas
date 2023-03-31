@@ -29,7 +29,7 @@ proc risk;
 				portfolio = Bond_Data_file
 				analysis = Potential_Exposure_Sim
 				currency = USD
-				options = (outall) 
+				options = (alpha =&conf. outall) 
 				rundate = "&baseDate."d;
 
 	RUNPROJECT Potential_Exposure outlib = potexp;

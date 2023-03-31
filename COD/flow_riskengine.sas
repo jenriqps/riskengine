@@ -152,7 +152,7 @@ quit;
 proc print data=curexp.summary; 
 run;
 
-proc print data=curexp.instvals; 
+proc print data=potexp.summary; 
 run;
 
 
