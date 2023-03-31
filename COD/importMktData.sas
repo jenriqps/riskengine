@@ -34,6 +34,16 @@ PROC IMPORT DATAFILE=REFFILE
 	GETNAMES=YES;
 RUN;
 
+/* (27MAR2023,EP) */
+
+FILENAME REFFILE DISK "&rootdat./input/parammat_static.xlsx";
+
+PROC IMPORT DATAFILE=REFFILE
+	DBMS=XLSX
+	OUT=toRD.parammat_static;
+	GETNAMES=YES;
+RUN;
+
 /**********************************************************************
  * Notas de Riesgos Financieros;
  * Jose Enrique Perez ;
@@ -98,10 +108,26 @@ proc sql;
 		, c.amxl_1 as AMXL
 		, d.jpm_1 as JPM
 		, e.USDMXN_1 as USDMXN
+		/* (30MAR2023,EP) */
+		, f.US_3M_1 as US_3M
+		, g.US_6M_1 as US_6M
+		, h.US_12M_1 as US_12M
+		, i.US_24M_1 as US_24M
+		, j.US_36M_1 as US_36M
+		, k.US_60M_1 as US_60M
+		, l.US_84M_1 as US_84M
 		from work.dates_2 a left join  work.import b on (a.date=b.aapl)
 		left join work.import c on (a.date=c.amxl)
 		left join work.import d on (a.date=d.jpm)
 		left join work.import e on (a.date=e.usdmxn)
+		/* (30MAR2023,EP) */
+		left join work.import f on (a.date=f.US_3M)
+		left join work.import g on (a.date=g.US_6M)
+		left join work.import h on (a.date=h.US_12M)
+		left join work.import i on (a.date=i.US_24M)
+		left join work.import j on (a.date=j.US_36M)
+		left join work.import k on (a.date=k.US_60M)
+		left join work.import l on (a.date=l.US_84M)
 		;
 quit;
 
@@ -122,7 +148,7 @@ run;
 
 
 * Computing the daily returns;
-data work.transform(keep=date RetAAPL RetAMXL RetJPM RetUSDMXN);
+data work.transform(keep=date RetAAPL RetAMXL RetJPM RetUSDMXN RetUS_3M RetUS_6M RetUS_12M RetUS_24M RetUS_36M RetUS_60M RetUS_84M);
 	format RetAAPL RetAMXL RetJPM RetUSDMXN percentn16.3;
 	label RetAAPL="Daily Return of AAPL" RetAMXL="Daily Return of AMXL" RetJPM="Daily Return of JPM" RetUSDMXN="Daily Return of USDMXN";
 	set toRD.histMatrix;
@@ -132,6 +158,14 @@ data work.transform(keep=date RetAAPL RetAMXL RetJPM RetUSDMXN);
 	RetAMXL=log(AMXL/lag(AMXL));
 	RetJPM=log(JPM/lag(JPM));
 	RetUSDMXN=log(USDMXN/lag(USDMXN));
+	/* (30MAR2023,EP) */
+	RetUS_3M=log(US_3M/lag(US_3M));
+	RetUS_6M=log(US_6M/lag(US_6M));
+	RetUS_12M=log(US_12M/lag(US_12M));
+	RetUS_24M=log(US_24M/lag(US_24M));
+	RetUS_36M=log(US_36M/lag(US_36M));
+	RetUS_60M=log(US_60M/lag(US_60M));
+	RetUS_84M=log(US_84M/lag(US_84M));
 	end;
 run;	
 
@@ -141,7 +175,15 @@ proc sgplot data=work.transform;
 	series x=Date y=RetAAPL;
 	series x=Date y=RetAMXL;	
 	series x=Date y=RetJPM;		
-	series x=Date y=RetUSDMXN;		
+	series x=Date y=RetUSDMXN;	
+	/* (30MAR2023,EP) */	
+	series x=Date y=RetUS_3M;
+	series x=Date y=RetUS_6M;
+	series x=Date y=RetUS_12M;
+	series x=Date y=RetUS_24M;
+	series x=Date y=RetUS_36M;
+	series x=Date y=RetUS_60M;
+	series x=Date y=RetUS_84M;
 	xaxis grid;
 	yaxis grid label="Daily return";
 	keylegend / location=inside;
@@ -170,13 +212,21 @@ data work.transform_t2;
 run;
 
 /* Computing the daily returns */
-data work.returns(keep=date AAPL AMXL JPM);
+data work.returns(keep=date AAPL AMXL JPM US_3M US_6M US_12M US_24M US_36M US_60M US_84M);
 	format AAPL AMXL JPM USDMXN percentn16.3;
 	label AAPL="Daily Return of AAPL" AMXL="Daily Return of AMXL" JPM="Daily Return of JPM";
 	set work.transform_t2;
 	AAPL=log(AAPL/lag&h.(AAPL));
 	AMXL=log(AMXL/lag&h.(AMXL));
 	JPM=log(JPM/lag&h.(JPM));
+	/* (30MAR2023,EP) */
+	US_3M=log(US_3M/lag&h.(US_3M));
+	US_6M=log(US_6M/lag&h.(US_6M));
+	US_12M=log(US_12M/lag&h.(US_12M));
+	US_24M=log(US_24M/lag&h.(US_24M));
+	US_36M=log(US_36M/lag&h.(US_36M));
+	US_60M=log(US_60M/lag&h.(US_60M));
+	US_84M=log(US_84M/lag&h.(US_84M));
 run;	
 
 /* Computing the covariances */

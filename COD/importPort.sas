@@ -11,14 +11,6 @@
  *****************************************************************************/
 
 
-proc sql;
-%if %sysfunc(exist(WORK.IMPORT)) %then %do;
-    drop table WORK.IMPORT;
-%end;
-%if %sysfunc(exist(WORK.IMPORT,VIEW)) %then %do;
-    drop view WORK.IMPORT;
-%end;
-quit;
 
 
 %put &=rootdat.;
@@ -30,5 +22,17 @@ PROC IMPORT DATAFILE=REFFILE
 	OUT=toRD.portfolio replace;
 	GETNAMES=YES;
 RUN;
+
+/* (27MAR2023,EP) Portfolio of corporate bonds */
+
+FILENAME REFFILE DISK "&rootdat./input/corp_bond_portfolio.xlsx";
+
+PROC IMPORT DATAFILE=REFFILE
+	DBMS=XLSX
+	OUT=toRD.corp_bond_portfolio;
+	GETNAMES=YES;
+RUN;
+
+
 
 

@@ -38,5 +38,16 @@ proc risk;
 			ndraw = 1007
 			generator = pseudo
 			horizon = &h.;
+		/* (30MAR2023,EP) */
+		SIMULATION 	Potential_Exposure_Sim
+					method = covariance
+					data = covar
+					ndraw = 1007
+					gen = twister
+					seed = 54321
+					interval = weekday
+					horizon = &h.
+					kind = EXPOSURE;
+
 	env save;
 run;

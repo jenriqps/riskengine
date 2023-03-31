@@ -22,5 +22,18 @@ proc risk;
 						portfolio=all_deals_list
 						rundate="&baseDate."d ;
 	runproject marketrisk out=mktrisk;
+	/* (30MAR2023,EP) */
+	PROJECT 	Potential_Exposure
+				data = CurrentData
+				rftrans = (static_parameter_matrix)
+				portfolio = Bond_Data_file
+				analysis = Potential_Exposure_Sim
+				currency = USD
+				options = (outall) 
+				rundate = "&baseDate."d;
+
+	RUNPROJECT Potential_Exposure outlib = potexp;
+
+
 	env save;
 run;

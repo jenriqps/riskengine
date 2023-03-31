@@ -19,5 +19,23 @@ proc risk;
 						options=(outall) 
 						rundate="&baseDate."d;
 	runproject MtM_project out=val;
+
+	/* (27MAR2023,) */
+
+	CROSSCLASS CountPart (company);
+
+	CUREXPOSURE Current_Exp;
+
+	PROJECT CurExp	portfolio = Bond_Data_File
+						analysis = Current_Exp
+						data	= (currentData)
+						rftrans = (static_parameter_matrix)
+						crossclass = CountPart
+						options = (outall)
+						rundate = "&baseDate."d;
+
+	RUNPROJECT CurExp outlib = C04_A;
+
+
 	env save;
 run;

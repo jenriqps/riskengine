@@ -73,6 +73,8 @@ libname toRD "&rootdat./toRD";
 libname portRD "&rdenv./_RD_PORTS/all_deals_list"; 
 libname frmRDval "&rdenv./val"; 
 libname frmRDrsk "&rdenv./mktrisk";
+libname curexp "&rdenv./CurExp";
+libname potexp "&rdenv./Potential_Exposure";
 libname models "&rootdat./toRD/Models";
 
 * Deleting previous results;
@@ -110,7 +112,17 @@ run;
 %include "&rootcod./loadHistMktData2RDenv.sas";
 
 /* Computing the market value of the portfolio */
+
+* Destination of the valuation log;
+filename vallog "&rootlog./vallog_&baseDate._&SysDate._%sysfunc(time(),time8.0).txt";
+proc printto print=vallog;
+run;
+
 %include "&rootcod./valuateRDenv.sas";
+
+proc printto;
+run;
+
 
 /* Making and running the risk analysis */
 %include "&rootcod./createRDanalysis.sas";
@@ -136,6 +148,13 @@ proc sql;
 	from FRMRDRSK.SIMSTAT
 	;
 quit;
+
+proc print data=curexp.summary; 
+run;
+
+proc print data=curexp.instvals; 
+run;
+
 
 /* Visualization */
 
