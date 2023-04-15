@@ -149,13 +149,6 @@ proc sql;
 	;
 quit;
 
-proc print data=curexp.summary; 
-run;
-
-proc print data=potexp.summary; 
-run;
-
-
 /* Visualization */
 
 ods graphics / reset width=6.4in height=4.8in imagemap noborder;
@@ -163,6 +156,7 @@ ods graphics / reset width=6.4in height=4.8in imagemap noborder;
 proc sort data=FRMRDRSK.SIMVALUE out=_HistogramTaskData;
 	by AnalysisName;
 run;
+
 
 proc sgplot data=_HistogramTaskData;
 	by AnalysisName;
@@ -182,3 +176,78 @@ ods graphics / reset;
 proc datasets library=WORK noprint;
 	delete _HistogramTaskData;
 	run;
+
+/* Current exposure */
+
+proc print data=curexp.summary; 
+run;
+
+proc print data=curexp.instvals;
+	where company="Verizon";
+	var company value;
+run;
+
+ods noproctitle;
+ods graphics / imagemap=on;
+title "Current exposure";
+proc means data=CUREXP.INSTVALS(where=(value>0)) chartype sum vardef=df;
+	var Value;
+	class Company;
+run;
+title;
+
+/* Pie chart of the market value */
+
+proc template;
+	define statgraph SASStudio.Pie;
+		begingraph;
+		entrytitle "Market value by issuer of the bond" / textattrs=(size=14);
+		layout region;
+		piechart category=Company response=MtM / datalabellocation=callout 
+			dataskin=matte;
+		endlayout;
+		endgraph;
+	end;
+run;
+
+ods graphics / reset width=6.4in height=4.8in imagemap;
+
+proc sgrender template=SASStudio.Pie 
+		data=CUREXP.SUMMARY (where=(Company <> "+"));
+run;
+
+ods graphics / reset;
+
+/* Pie chart of the current exposure */
+
+proc template;
+	define statgraph SASStudio.Pie;
+		begingraph;
+		entrytitle "Current Exposure" / textattrs=(size=14);
+		layout region;
+		piechart category=Company response=Exposure / datalabellocation=callout 
+			dataskin=matte;
+		endlayout;
+		endgraph;
+	end;
+run;
+
+ods graphics / reset width=6.4in height=4.8in imagemap;
+
+proc sgrender template=SASStudio.Pie 
+		data=CUREXP.SUMMARY (where=(Company <> "+"));
+run;
+
+ods graphics / reset;
+
+
+
+proc print data=potexp.summary; 
+run;
+
+title "Potential exposure";
+proc sgplot data=potexp.simvalue;
+	histogram Exposure /;
+	yaxis grid;
+run;
+title;
