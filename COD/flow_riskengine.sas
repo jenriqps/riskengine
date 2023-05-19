@@ -269,6 +269,7 @@ run;
 /*  so that they are visible in the SAS Studio Libraries tree.               */
 /*****************************************************************************/
 
+/*
 cas; 
 caslib _all_ assign;
 
@@ -277,4 +278,5 @@ proc casutil;
 	casout="cashflow";
 	promote casdata="cashflow";
 run;
+*/
 
