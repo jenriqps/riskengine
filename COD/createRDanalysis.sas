@@ -24,6 +24,8 @@ proc risk;
 			interval = weekday;
 		simulation cov_sim
 			method = covariance
+			/* (19MAY2023,EP) */
+			data = covar
 			interval = weekday
 			seed = 54321
 			ndraw = 1007
@@ -48,6 +50,12 @@ proc risk;
 					interval = weekday
 					horizon = &h.
 					kind = EXPOSURE;
+		/* (11MAY2023,EP) Cash flow analysis */
+		cashflow	CFAnalysis
+					analysis = cov_sim
+					buckettype = simple
+					evaldate = "&baseDate."d;
+
 
 	env save;
 run;

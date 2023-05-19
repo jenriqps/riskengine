@@ -28,6 +28,10 @@
 %include "&rootcod./macros/Stock_PricingM.sas";
 %include "&rootcod./macros/static_parameter.sas";
 %include "&rootcod./macros/Bond_Price.sas";
+/* (19MAY2023,EP) */
+%include "&rootcod./macros/Mort_Price.sas";
+%include "&rootcod./macros/Mortcf_Price.sas";
+%include "&rootcod./macros/cfdiscount.sas";
 
 proc risk;
 	env open = "&rdenv.";
@@ -40,6 +44,13 @@ proc risk;
 		declare references = (REF_DIVISAS num var);
 		* We declare references to risk factors (prices);
 		readrefs data = toRD.refvars;
+      /* (11MAY2023, EP) Time Grids */
+      TIMEGRID One_month (1 month);
+
+      TIMEGRID TimeGrid1 (1 month, 2 month, 3 month, 4 month, 5 month, 6 month,
+                     7 month, 8 month, 9 month, 10 month, 11 month, 12 month);
+      TIMEGRID TimeGrid2 (3 month, 6 month, 9 month, 12 month);
+
 
       /* (27MAR2023,EP) Static Parameter matrices */
       MARKETDATA  static_param_mat 
@@ -109,13 +120,15 @@ proc compile outlib = "&rdenv." environment = "&rdenv." package = valuation_func
 	%DiasHab_entre_dos_fechas(tr=*);
 	%DiaHabil(tr=*);
 	%Fecha_masmenos_dias_habiles(tr=*);
-	%Stock_PricingM()
+	%Stock_PricingM();
 
 	/* (27MAR2023,EP) */
 	%static_parameter();
 	%Bond_Price();
-
-
+	/* (19MAY2023,EP) */
+	%cfdiscount();
+	%Mort_Price();
+	%Mortcf_Price();
 run;
 
 
@@ -130,6 +143,17 @@ proc risk;
 		variables=(ALType ALPosition ShortPosition MaturityDate holding Currency Par_LC Coup_Freq Coupon 
 		Company Rates CRRates cred_rate Employee TypeOfIndustry tradeGroupID )
 		methods = (price Bond_Price);
+		/* (19MAY2023,EP) */
+		/*MORTGAGE_TYPE*/
+		instrument mortgage
+		   variables = (rate_type, holding, principal, term_mos, cpn_rate, guar_entity, jumbo, credit_scr, Rates, monthly_cf, MaturityDate,RemainingBal,LoanOfficer)
+		   methods= (price Mort_price);
+		
+		/*MORTGAGE_CF_TYPE*/
+		instrument mortcf
+		   valrecord = CASHFLOWS
+		   variables = (rate_type, holding, principal, term_mos, cpn_rate, guar_entity, jumbo, credit_scr, Rates, CFMatDate, RemainingBal, LoanOfficer)
+		   methods = (price Mortcf_Price);
 
 	    /* (27MAR2023,EP) Defines RF transformation using static parameter matrix */
 	    RFTRANS static_parameter_matrix static_parameter;

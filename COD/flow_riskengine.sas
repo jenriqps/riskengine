@@ -76,6 +76,7 @@ libname frmRDrsk "&rdenv./mktrisk";
 libname curexp "&rdenv./CurExp";
 libname potexp "&rdenv./Potential_Exposure";
 libname models "&rootdat./toRD/Models";
+libname gapliq "&rdenv./gapanalysis";
 
 * Deleting previous results;
 proc datasets lib=tord kill nodetails nolist;
@@ -83,9 +84,9 @@ run;
 
 /* As the log is big, we send it to a file */
 /* Change the path to adjust it to your user */
-filename myoutput "&rootlog./riskengine_&baseDate._&SysDate._%sysfunc(time(),time8.0).txt";
-proc printto log=myoutput;
-run;
+*filename myoutput "&rootlog./riskengine_&baseDate._&SysDate._%sysfunc(time(),time8.0).txt";
+*proc printto log=myoutput;
+*run;
 
 /* Importing the portfolio */
 %include "&rootcod./importPort.sas";
@@ -114,14 +115,14 @@ run;
 /* Computing the market value of the portfolio */
 
 * Destination of the valuation log;
-filename vallog "&rootlog./vallog_&baseDate._&SysDate._%sysfunc(time(),time8.0).txt";
-proc printto print=vallog;
-run;
+*filename vallog "&rootlog./vallog_&baseDate._&SysDate._%sysfunc(time(),time8.0).txt";
+*proc printto print=vallog;
+*run;
 
 %include "&rootcod./valuateRDenv.sas";
 
-proc printto;
-run;
+*proc printto;
+*run;
 
 
 /* Making and running the risk analysis */
@@ -130,8 +131,8 @@ run;
 
 
 /* We return the log to the usual output */
-proc printto;
-run;
+*proc printto;
+*run;
 
 proc sql;
 	select
@@ -251,3 +252,29 @@ proc sgplot data=potexp.simvalue;
 	yaxis grid;
 run;
 title;
+
+/* Cash flow analysis */
+
+/* Market value */
+proc print data=gapliq.summary;
+run;
+
+/* Summary of cashglows */
+proc print data=gapliq.combine;
+run;
+
+
+/*****************************************************************************/
+/*  Create a default CAS session and create SAS librefs for existing caslibs */
+/*  so that they are visible in the SAS Studio Libraries tree.               */
+/*****************************************************************************/
+
+cas; 
+caslib _all_ assign;
+
+proc casutil;
+	load data=gapliq.cashflow outcaslib="CASUSER"
+	casout="cashflow";
+	promote casdata="cashflow";
+run;
+
