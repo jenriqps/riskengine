@@ -44,12 +44,6 @@ PROC IMPORT DATAFILE=REFFILE
 	GETNAMES=YES;
 RUN;
 
-/**********************************************************************
- * Notas de Riesgos Financieros;
- * Jose Enrique Perez ;
- * Licenciatura en Actuaría;
- * Facultad de Negocios. Universidad La Salle México;
- **********************************************************************/
 
 options cmplib=work.myfunc;
 
@@ -77,12 +71,9 @@ data work.Holiday_LIST_MX(drop=i);
 	end;
 run;
 
-%let start=16AUG2017;
-%let end=16AUG2022;
-
 data work.dates;
 	format date date9.;
-	do date="&start."d to "&end."d by 1;
+	do date="&startdate."d to "&enddate."d by 1;
 		output;
 	end;
 run;
@@ -102,38 +93,17 @@ Procesamiento de las series históricas de precios
 
 proc sql;
 	create table work.transform_t as
-		select 
-		a.date
-		, b.aapl_1 as AAPL
-		, c.amxl_1 as AMXL
-		, d.jpm_1 as JPM
-		, e.USDMXN_1 as USDMXN
-		/* (30MAR2023,EP) */
-		, f.US_3M_1 as US_3M
-		, g.US_6M_1 as US_6M
-		, h.US_12M_1 as US_12M
-		, i.US_24M_1 as US_24M
-		, j.US_36M_1 as US_36M
-		, k.US_60M_1 as US_60M
-		, l.US_84M_1 as US_84M
-		from work.dates_2 a left join  work.import b on (a.date=b.aapl)
-		left join work.import c on (a.date=c.amxl)
-		left join work.import d on (a.date=d.jpm)
-		left join work.import e on (a.date=e.usdmxn)
-		/* (30MAR2023,EP) */
-		left join work.import f on (a.date=f.US_3M)
-		left join work.import g on (a.date=g.US_6M)
-		left join work.import h on (a.date=h.US_12M)
-		left join work.import i on (a.date=i.US_24M)
-		left join work.import j on (a.date=j.US_36M)
-		left join work.import k on (a.date=k.US_60M)
-		left join work.import l on (a.date=l.US_84M)
+		select *		
+		from work.dates_2 a left join  work.import b on (a.date=b.date)
 		;
 quit;
 
 /* (EP,05SEP2022) Identifying missing values */
+title "Looking for missing values in the historial series of the risk factors (original data)";
+ods select MissingValues;
 proc  univariate data=work.transform_t;
 run;
+title;
 
 /* (EP,05SEP2022) Completing missing values */
 
@@ -143,52 +113,32 @@ run;
 
 
 /* (EP,05SEP2022) Identifying missing values */
+title "Looking for missing values in the historial series of the risk factors (transformed data)";
+ods select MissingValues;
 proc  univariate data=toRD.histMatrix;
 run;
+title;
 
+/* (03SEP2023,EP) */
+proc contents data=toRD.histMatrix out=work.contents noprint;
+run;
+
+proc sql;
+	select compress(name)||"=log("||compress(name)||"/lag&h.("||compress(name)||"));" into: logret separated by " "
+	from work.contents
+	where compress(name) ne "date" 
+	;
+quit;
 
 * Computing the daily returns;
-data work.transform(keep=date RetAAPL RetAMXL RetJPM RetUSDMXN RetUS_3M RetUS_6M RetUS_12M RetUS_24M RetUS_36M RetUS_60M RetUS_84M);
-	format RetAAPL RetAMXL RetJPM RetUSDMXN percentn16.3;
-	label RetAAPL="Daily Return of AAPL" RetAMXL="Daily Return of AMXL" RetJPM="Daily Return of JPM" RetUSDMXN="Daily Return of USDMXN";
+data work.transform;
 	set toRD.histMatrix;
 	if date >= "01AUG1986"d then 
 	do;
-	RetAAPL=log(AAPL/lag(AAPL));
-	RetAMXL=log(AMXL/lag(AMXL));
-	RetJPM=log(JPM/lag(JPM));
-	RetUSDMXN=log(USDMXN/lag(USDMXN));
-	/* (30MAR2023,EP) */
-	RetUS_3M=log(US_3M/lag(US_3M));
-	RetUS_6M=log(US_6M/lag(US_6M));
-	RetUS_12M=log(US_12M/lag(US_12M));
-	RetUS_24M=log(US_24M/lag(US_24M));
-	RetUS_36M=log(US_36M/lag(US_36M));
-	RetUS_60M=log(US_60M/lag(US_60M));
-	RetUS_84M=log(US_84M/lag(US_84M));
+	&logret.;
 	end;
 run;	
 
-* Exploring the daily returns;
-title "Daily Returns";
-proc sgplot data=work.transform;
-	series x=Date y=RetAAPL;
-	series x=Date y=RetAMXL;	
-	series x=Date y=RetJPM;		
-	series x=Date y=RetUSDMXN;	
-	/* (30MAR2023,EP) */	
-	series x=Date y=RetUS_3M;
-	series x=Date y=RetUS_6M;
-	series x=Date y=RetUS_12M;
-	series x=Date y=RetUS_24M;
-	series x=Date y=RetUS_36M;
-	series x=Date y=RetUS_60M;
-	series x=Date y=RetUS_84M;
-	xaxis grid;
-	yaxis grid label="Daily return";
-	keylegend / location=inside;
-run;
-title;
 
 /*
 Current risk factors data
@@ -204,33 +154,8 @@ quit;
 
 /* Covariance matrix */
 
-data work.transform_t2;
-	set work.transform_t(where=(date between "&startdate."d and "&enddate."d));
-	AMXL=AMXL;
-	AAPL=AAPL*USDMXN;
-	JPM=JPM*USDMXN;
-run;
-
-/* Computing the daily returns */
-data work.returns(keep=date AAPL AMXL JPM US_3M US_6M US_12M US_24M US_36M US_60M US_84M);
-	format AAPL AMXL JPM USDMXN percentn16.3;
-	label AAPL="Daily Return of AAPL" AMXL="Daily Return of AMXL" JPM="Daily Return of JPM";
-	set work.transform_t2;
-	AAPL=log(AAPL/lag&h.(AAPL));
-	AMXL=log(AMXL/lag&h.(AMXL));
-	JPM=log(JPM/lag&h.(JPM));
-	/* (30MAR2023,EP) */
-	US_3M=log(US_3M/lag&h.(US_3M));
-	US_6M=log(US_6M/lag&h.(US_6M));
-	US_12M=log(US_12M/lag&h.(US_12M));
-	US_24M=log(US_24M/lag&h.(US_24M));
-	US_36M=log(US_36M/lag&h.(US_36M));
-	US_60M=log(US_60M/lag&h.(US_60M));
-	US_84M=log(US_84M/lag&h.(US_84M));
-run;	
-
 /* Computing the covariances */
-proc corr data=WORK.RETURNS(drop=date) nocorr cov vardef=n nosimple noprob outp=work.cov_matrix	plots=none noprint;
+proc corr data=WORK.transform(drop=date) nocorr cov vardef=n nosimple noprob outp=work.cov_matrix	plots=none noprint;
 run;
 
 proc sql;

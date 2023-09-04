@@ -6,8 +6,6 @@
  **********************************************************************/
 
 
-
-
 * Options for the detail of the log;
 options mprint  mlogic mautosource mcompile mlogicnest mprintnest msglevel=n minoperator fullstimer symbolgen source2; 
 
@@ -19,7 +17,7 @@ options mprint  mlogic mautosource mcompile mlogicnest mprintnest msglevel=n min
 %let SubFolder=;
 
 * Base date;
-%let baseDateTime = 15AUG2022:20:07:00.00;
+%let baseDateTime = 23JUN2015:20:07:00.00;
 
 * Getting the base date from the base date time;
 data _null_;
@@ -27,14 +25,22 @@ data _null_;
 	call symputx("baseDate",aux,'G');
 run;
 
-%put &baseDateTime.;
-%put &baseDate.;
+%put &=baseDateTime. &=baseDate.;
 
 /* Hyperparameters */
 
 /* Start and end date to collect historical data*/
-%let startdate=15AUG2018;
-%let enddate=15AUG2022;
+
+data _null_;
+	aux = put(intnx('year',"&baseDate."d,-1,'sameday'),date9.);
+	call symputx("startdate",aux,'G');
+	call symputx("enddate","&baseDate.",'G');
+run;
+
+%put &=startdate. &=enddate.;
+
+
+
 
 /* Confidence of the VaR*/
 %let conf=0.05;
@@ -55,17 +61,6 @@ run;
 
 * Macrovariable with the directory of the RD environment;
 %let rdenv = &rootdat./rdenv;
-
-* We get the name of the environment;
-data _null_;
-	c = "&rdenv.";
-	l = length(c);
-	p = find(c,"/",-l);
-	s = substr(c,p+1,32);
-	call symputx('rdenvnam',s,'G');
-run;
-
-%put &rdenvnam.;
 
 * Libraries to check the input and output data sets;
 libname env "&rootdat.";
@@ -148,6 +143,15 @@ proc sql;
 	, es
 	from FRMRDRSK.SIMSTAT
 	;
+	select
+	resultName
+	, BaseCaseValue
+	, var
+	, varpct
+	, es
+	from FRMRDRSK.dvar
+	;
+
 quit;
 
 /* Visualization */
@@ -260,8 +264,10 @@ proc print data=gapliq.summary;
 run;
 
 /* Summary of cashglows */
+/*
 proc print data=gapliq.combine;
 run;
+*/
 
 
 /*****************************************************************************/
