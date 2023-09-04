@@ -124,7 +124,7 @@ proc contents data=toRD.histMatrix out=work.contents noprint;
 run;
 
 proc sql;
-	select compress(name)||"=log("||compress(name)||"/lag&h.("||compress(name)||"));" into: logret separated by " "
+	select compress(name)||"=log("||compress(name)||"/lag&h.("||compress(name)||")); " into: logret separated by " "
 	from work.contents
 	where compress(name) ne "date" 
 	;
@@ -165,6 +165,22 @@ proc sql;
 		where _type_ = "COV"
 		;
 quit;
+
+/* (04SEP2023,EP) */
+
+proc sql;
+	select "Ret"||compress(name)||"="||compress(name)||"; " into: logret2 separated by " "
+	from work.contents
+	where compress(name) ne "date" 
+	;
+quit;
+
+data work.transform;
+	set work.transform;
+	&logret2.;
+run;
+
+
 
 /* Estimation an simulation of a GARCH(p=1,q=1) model por each risk factor */
 %create_garch_1_1(inputds=work.transform,cd=tord.currentdata,rf=AAPL,outds=mktstat_AAPL);
