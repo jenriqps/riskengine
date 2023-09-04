@@ -21,7 +21,7 @@ proc risk;
        	instdata MortgageCF_Data file = tord.mortgage_cf format = cash_flow;
 
 		* We list the portfolio and read them;
-		sources all_deals_list equity;
+		sources all_deals_list (equity Corp_Bond Mortgage_Data);
 		read sources=all_deals_list out=all_deals_list;
 		/* (27MAR2023,EP) */
 		sources Bond_Data_File Corp_Bond;
