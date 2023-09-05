@@ -61,45 +61,41 @@ proc risk;
                data = static_param_mat;
 
 		/* (27MAR2023,EP) RDARRAYS and RDREFS*/
-		array US_Curve ir currency= USD 
-		label= "US Treasury Rate Curve" group = "Interest Rate"
-		ELEMENTS=(US_3M US_6M US_12M US_24M US_36M US_60M US_84M)
-		refmap=(ir_ref="UStreas");
 		
-		array US_Curve_AAA ir currency = USD
-		label = "US Treasury Rate Curve - AAA" group = "Interest Rate"
-		ELEMENTS =(US_3M_AAA US_6M_AAA US_12M_AAA US_24M_AAA US_36M_AAA US_60M_AAA US_84M_AAA)
-		refmap=(cred_ir_ref="UStreas_AAA");
+		array MX_AAA ir currency = MXN
+		label = "MX Curve - AAA" group = "Interest Rate"
+		ELEMENTS =(MX_AAA_91 MX_AAA_182 MX_AAA_364 MX_AAA_728 MX_AAA_1092 MX_AAA_1820 MX_AAA_2548)
+		refmap=(cred_ir_ref="MX_AAA");
 		
-		array US_Curve_AA ir currency = USD
-		label = "US Treasury Rate Curve - AA" group = "Interest Rate"
-		ELEMENTS =(US_3M_AA US_6M_AA US_12M_AA US_24M_AA US_36M_AA US_60M_AA US_84M_AA)
-		refmap=(cred_ir_ref="UStreas_AA");
+		array MX_AA ir currency = MXN
+		label = "MX Curve - AA" group = "Interest Rate"
+		ELEMENTS =(MX_AA_91 MX_AA_182 MX_AA_364 MX_AA_728 MX_AA_1092 MX_AA_1820 MX_AA_2548)
+		refmap=(cred_ir_ref="MX_AA");
 		
-		array US_Curve_A ir currency = USD
-		label = "US Treasury Rate Curve - A" group = "Interest Rate"
-		ELEMENTS =(US_3M_A US_6M_A US_12M_A US_24M_A US_36M_A US_60M_A US_84M_A)
-		refmap=(cred_ir_ref="UStreas_A");
+		array MX_A ir currency = MXN
+		label = "MX Curve - A" group = "Interest Rate"
+		ELEMENTS =(MX_A_91 MX_A_182 MX_A_364 MX_A_728 MX_A_1092 MX_A_1820 MX_A_2548)
+		refmap=(cred_ir_ref="MX_A");
 		
-		array US_Curve_BBB ir currency = USD
-		label = "US Treasury Rate Curve - BB" group = "Interest Rate"
-		ELEMENTS =(US_3M_BBB US_6M_BBB US_12M_BBB US_24M_BBB US_36M_BBB US_60M_BBB US_84M_BBB)
-		refmap=(cred_ir_ref="UStreas_BBB");
+		array MX_BBB ir currency = MXN
+		label = "MX Curve - BBB" group = "Interest Rate"
+		ELEMENTS =(MX_BBB_91 MX_BBB_182 MX_BBB_364 MX_BBB_728 MX_BBB_1092 MX_BBB_1820 MX_BBB_2548)
+		refmap=(cred_ir_ref="MX_BBB");
 		
-		array US_Curve_BB ir currency = USD
-		label = "US Treasury Rate Curve - AA" group = "Interest Rate"
-		ELEMENTS =(US_3M_BB US_6M_BB US_12M_BB US_24M_BB US_36M_BB US_60M_BB US_84M_BB)
-		refmap=(cred_ir_ref="UStreas_BB");
+		array MX_BB ir currency = MXN
+		label = "MX Curve - BB" group = "Interest Rate"
+		ELEMENTS =(MX_BB_91 MX_BB_182 MX_BB_364 MX_BB_728 MX_BB_1092 MX_BB_1820 MX_BB_2548)
+		refmap=(cred_ir_ref="MX_BB");
 		
-		array US_Curve_B ir currency = USD
-		label = "US Treasury Rate Curve - AA" group = "Interest Rate"
-		ELEMENTS =(US_3M_B US_6M_B US_12M_B US_24M_B US_36M_B US_60M_B US_84M_B)
-		refmap=(cred_ir_ref="UStreas_B");
+		array MX_B ir currency = MXN
+		label = "MX Curve - B" group = "Interest Rate"
+		ELEMENTS =(MX_B_91 MX_B_182 MX_B_364 MX_B_728 MX_B_1092 MX_B_1820 MX_B_2548)
+		refmap=(cred_ir_ref="MX_B");
 		
-		array US_Curve_CCC ir currency = USD
-		label = "US Treasury Rate Curve - AA" group = "Interest Rate"
-		ELEMENTS =(US_3M_CCC US_6M_CCC US_12M_CCC US_24M_CCC US_36M_CCC US_60M_CCC US_84M_CCC)
-		refmap=(cred_ir_ref="UStreas_CCC");
+		array MX_CCC ir currency = MXN
+		label = "MX Curve - CCC" group = "Interest Rate"
+		ELEMENTS =(MX_CCC_91 MX_CCC_182 MX_CCC_364 MX_CCC_728 MX_CCC_1092 MX_CCC_1820 MX_CCC_2548)
+		refmap=(cred_ir_ref="MX_CCC");
 
 		/* (04SEP2023,EP) New curves */
 		array CETES ir currency = MXN
