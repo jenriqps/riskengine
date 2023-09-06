@@ -194,7 +194,7 @@ run;
 proc risk;
 	env open = "&rdenv.";
 		Instrument Stock 
-		variables = (ref_price LocalCurrency ReferenceCurrency Holding ShortPosition ALPosition)
+		variables = (ref_price LocalCurrency ReferenceCurrency Holding ShortPosition ALPosition TypeOfIndustry Employee Company)
 		methods = (price Stock_PricingM);
 	    /* (27MAR2023,EP) Defines RF transformation using static parameter matrix */
 		Instrument CorpBond
