@@ -13,11 +13,13 @@
 
 proc risk;
 	env open="&rdenv.";
-	crossclass LoanOffByGuar (LoanOfficer guar_entity);
+	
 	project marketrisk
-						analysis=(HistSim delta_sim cov_sim model_sim) 
+						analysis=(HistSim delta_sim /*cov_sim*/ model_sim) 
 						currency=MXN 
 						data = (currentData historic_prices covar)
+						rftrans = (static_parameter_matrix)
+						crossclass = mrcc
 						options=(alpha = &conf. instvals simstates allstates allprice simstat simvalue) 
 						models=(RetAAPL RetAMXL RetJPM RetUSDMXN)
 						portfolio=all_deals_list
@@ -41,7 +43,7 @@ proc risk;
 					data = CurrentData
 					rftrans = (static_parameter_matrix)
 					portfolio = Mortgage_Data_File
-					CFBUCKETLIST = (int (TimeGrid1 (ABS)) /*,prin (TimeGrid2 (ABS))*/)
+					CFBUCKETLIST = (int (TimeGrid1 (ABS)) ,prin (TimeGrid1 (ABS)))
 					options = (outall)
 					currency = USD
 					crossclass = LoanOffByGuar

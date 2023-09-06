@@ -204,17 +204,22 @@ proc risk;
 		/* (19MAY2023,EP) */
 		/*MORTGAGE_TYPE*/
 		instrument mortgage
-		   variables = (rate_type, holding, principal, term_mos, cpn_rate, guar_entity, jumbo, credit_scr, Rates, monthly_cf, MaturityDate,RemainingBal,LoanOfficer)
+		   variables = (rate_type, holding, principal, term_mos, cpn_rate, guar_entity, jumbo, credit_scr, Rates, monthly_cf, 
+						MaturityDate,RemainingBal,LoanOfficer,TypeOfIndustry, Company, Employee)
 		   methods= (price Mort_price);
 		
 		/*MORTGAGE_CF_TYPE*/
 		instrument mortcf
 		   valrecord = CASHFLOWS
-		   variables = (rate_type, holding, principal, term_mos, cpn_rate, guar_entity, jumbo, credit_scr, Rates, CFMatDate, RemainingBal, LoanOfficer)
+		   variables = (rate_type, holding, principal, term_mos, cpn_rate, guar_entity, jumbo, credit_scr, Rates, CFMatDate, RemainingBal, 
+						LoanOfficer,TypeOfIndustry, Company, Employee)
 		   methods = (price Mortcf_Price);
 
 	    /* (27MAR2023,EP) Defines RF transformation using static parameter matrix */
 	    RFTRANS static_parameter_matrix static_parameter;
+		/* (06SEP2023,EP) Variables to aggregate the results */
+		crossclass mrcc (TypeOfIndustry Company Employee InstID);
+		crossclass LoanOffByGuar (LoanOfficer guar_entity);
 	env save;
 run;
 
