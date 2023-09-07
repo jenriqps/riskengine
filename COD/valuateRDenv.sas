@@ -16,6 +16,7 @@ proc risk;
 	project MtM_project portfolio=all_deals_list
 						currency=MXN 
 						data=currentData
+						rftrans = (static_parameter_matrix)
 						options=(outall) 
 						rundate="&baseDate."d;
 	runproject MtM_project out=val;

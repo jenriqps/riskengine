@@ -218,7 +218,7 @@ proc risk;
 	    /* (27MAR2023,EP) Defines RF transformation using static parameter matrix */
 	    RFTRANS static_parameter_matrix static_parameter;
 		/* (06SEP2023,EP) Variables to aggregate the results */
-		crossclass mrcc (TypeOfIndustry Company Employee InstID);
+		crossclass mrcc (instSource TypeOfIndustry Company Employee InstID);
 		crossclass LoanOffByGuar (LoanOfficer guar_entity);
 	env save;
 run;

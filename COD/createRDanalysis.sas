@@ -22,22 +22,23 @@ proc risk;
 		deltanormal delta_sim 
 			data = covar
 			interval = weekday;
+		/*
 		simulation cov_sim
 			method = covariance
-			/* (19MAY2023,EP) */
 			data = covar
 			interval = weekday
 			seed = 54321
 			ndraw = 1007
 			generator = pseudo
 			horizon = &h.;
+		*/
 		simulation model_sim
 			method = montecarlo
 			data = historic_prices
 			interval = weekday
 			errmod = normal
 			seed = 12345
-			ndraw = 1007
+			ndraw = 250
 			generator = pseudo
 			horizon = &h.;
 		/* (30MAR2023,EP) */
@@ -52,7 +53,7 @@ proc risk;
 					kind = EXPOSURE;
 		/* (11MAY2023,EP) Cash flow analysis */
 		cashflow	CFAnalysis
-					analysis = cov_sim
+					analysis = traditional /*cov_sim*/
 					buckettype = simple
 					evaldate = "&baseDate."d;
 
