@@ -6,12 +6,10 @@
 
 		method Bond_Price desc = "Bond Pricing Function" kind = price;
 
-			put instid=;
 
 			/* Find the number of coupon payments remaining */
 			rempay = int((MaturityDate - _date_)/(30*Coup_Freq));
 			_cashflow_.num = rempay;
-			put MaturityDate= _date_= rempay=;
 
 			if rempay = 0 then
 			do;
@@ -28,11 +26,9 @@
 
 						/* Set the maturity dates */
 						_cashflow_.matdate{i} = INTNX('month',_date_,Coup_Freq*i);
-						put _cashflow_.matdate{i}=;
 
 						/* Set the maturity amounts */
 						_cashflow_.matamt{i} = Par_LC*(Coupon)*(Coup_Freq/12);
-						put _cashflow_.matamt{i}=;
 				end;
 
 				/* Load the principal repayment into the _cashflow_ structure */
@@ -43,12 +39,9 @@
 				/* Set the amount */
 				_cashflow_.matamt{rempay+1} = Par_LC;
 
-				put _cashflow_.matdate{rempay+1}= _cashflow_.matamt{rempay+1}=;
-
 				/* Find the discounted value of the cashflows for corporate bonds using a user defined function */
 				*cf_value = cfdiscount(rempay+1,_cashflow_.matamt,_cashflow_.matdate,cred_ir_ref.crrates,cred_ir_ref.crrates.mat,_date_);
 				_value_ = pv_cashflow(., ., ., cred_ir_ref.crrates);
-				put _value_=;	
 			end;
 		endmethod;
 
