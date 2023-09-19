@@ -142,6 +142,7 @@ proc sql;
 	, varpct_u
 	, es
 	from FRMRDRSK.SIMSTAT
+	where instSource='+'
 	;
 	select
 	resultName
@@ -150,8 +151,8 @@ proc sql;
 	, varpct
 	, es
 	from FRMRDRSK.dvar
+	where instSource='+'
 	;
-
 quit;
 
 /* Visualization */
@@ -163,13 +164,13 @@ proc sort data=FRMRDRSK.SIMVALUE out=_HistogramTaskData;
 run;
 
 
-proc sgplot data=_HistogramTaskData;
+proc sgplot data=_HistogramTaskData(where=(instSource='+'));
 	by AnalysisName;
 	histogram Value /;
 	yaxis grid;
 run;
 
-proc sgplot data=_HistogramTaskData;
+proc sgplot data=_HistogramTaskData(where=(instSource='+'));
 	by AnalysisName;
 	histogram pl /;
 	yaxis grid;
