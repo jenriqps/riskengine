@@ -86,11 +86,11 @@ run;
 /* Importing the portfolio */
 %include "&rootcod./importPort.sas";
 
-/* Importing the market data */
-%include "&rootcod./importMktData.sas";
-
 /* Importing the configuration of risk factors and instrument variables */
 %include "&rootcod./importRF.sas";
+
+/* Importing the market data */
+%include "&rootcod./importMktData.sas";
 
 /* Making the risk environment */
 %include "&rootcod./createRDenv.sas";
