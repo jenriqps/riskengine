@@ -1,13 +1,8 @@
 /*****************************************************************************
-
    NAME: importMktData.sas
-
    PURPOSE: To import the market data file
-
    INPUTS: market_data.xlsx
-
    NOTES: -
-
  *****************************************************************************/
 
 
@@ -123,7 +118,7 @@ title;
 proc contents data=toRD.histMatrix out=work.contents noprint;
 run;
 
-proc sql;
+proc sql noprint;
 	select compress(name)||"=log("||compress(name)||"/lag&h.("||compress(name)||")); " into: logret separated by " "
 	from work.contents
 	where compress(name) ne "date" 
@@ -168,7 +163,7 @@ quit;
 
 /* (04SEP2023,EP) */
 
-proc sql;
+proc sql noprint;
 	select "Ret"||compress(name)||"="||compress(name)||"; " into: logret2 separated by " "
 	from work.contents
 	where compress(name) ne "date" 
@@ -183,7 +178,17 @@ run;
 
 
 /* Estimation an simulation of a GARCH(p=1,q=1) model por each risk factor */
-%create_garch_1_1(inputds=work.transform,cd=tord.currentdata,rf=AAPL,outds=mktstat_AAPL);
-%create_garch_1_1(inputds=work.transform,cd=tord.currentdata,rf=AMXL,outds=mktstat_AMXL);
-%create_garch_1_1(inputds=work.transform,cd=tord.currentdata,rf=JPM,outds=mktstat_JPM);
-%create_garch_1_1(inputds=work.transform,cd=tord.currentdata,rf=USDMXN,outds=mktstat_USDMXN);
+* Data set with the risk factors to be modelled with a GARCH(1,1);
+proc sql;
+	create table work.rf_garch as
+	select name
+	from tord.riskfactors
+	where compress(upcase(role)) in ("VAR","FX_SPOT")
+	;
+quit;
+
+data _null_;
+	set work.rf_garch;
+	call execute('%create_garch_1_1(inputds=work.transform,cd=tord.currentdata,rf='||compress(name)||',outds=mktstat_'||compress(name)||')');
+run;
+
