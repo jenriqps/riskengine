@@ -6,7 +6,7 @@
 		_value_=0;
 
 		if compress(upcase(LocalCurrency))  = "MXN" then _VALUE_ = PRICE.ref_price;	
-		else _VALUE_ = PRICE.ref_price * REF_DIVISAS.ReferenceCurrency;
+		else _VALUE_ = PRICE.ref_price;
 
 	endmethod;
 
