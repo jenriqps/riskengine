@@ -155,36 +155,65 @@ proc sql;
 	;
 quit;
 
-/* Visualization */
+/* Reporte de resultados */
+proc sql;
+	create table work.test as
+	select
+	basedate
+	, resultName
+	, N
+	, MtM
+	, var
+	, var_l
+	, var_u
+	, varpct
+	, es
+	from FRMRDRSK.SIMSTAT
+	where instSource='+' and compress(resultName) like "%HistSim%"
+	;
+quit;
 
+/* Exporting the data set to Excel */
+proc export data=work.test dbms=xlsx
+	outfile="&rootlog./&baseDate._salida.xlsx" replace label;
+run;
+
+
+
+
+/* Visualization */
+/*
 ods graphics / reset width=6.4in height=4.8in imagemap noborder;
 
 proc sort data=FRMRDRSK.SIMVALUE out=_HistogramTaskData;
 	by AnalysisName;
 run;
-
-
+*/
+/*
 proc sgplot data=_HistogramTaskData(where=(instSource='+'));
 	by AnalysisName;
 	histogram Value /;
 	yaxis grid;
 run;
-
+*/
+/*
 proc sgplot data=_HistogramTaskData(where=(instSource='+'));
 	by AnalysisName;
 	histogram pl /;
 	yaxis grid;
 run;
-
-
+*/
+/*
 ods graphics / reset;
 
 proc datasets library=WORK noprint;
 	delete _HistogramTaskData;
 	run;
+*/
 
 /* Current exposure */
 
+/*
 proc print data=curexp.summary; 
 run;
 
@@ -193,6 +222,9 @@ proc print data=curexp.instvals;
 	var company value;
 run;
 
+*/
+
+/*
 ods noproctitle;
 ods graphics / imagemap=on;
 title "Current exposure";
@@ -201,9 +233,11 @@ proc means data=CUREXP.INSTVALS(where=(value>0)) chartype sum vardef=df;
 	class Company;
 run;
 title;
+*/
 
 /* Pie chart of the market value */
 
+/*
 proc template;
 	define statgraph SASStudio.Pie;
 		begingraph;
@@ -215,7 +249,8 @@ proc template;
 		endgraph;
 	end;
 run;
-
+*/
+/*
 ods graphics / reset width=6.4in height=4.8in imagemap;
 
 proc sgrender template=SASStudio.Pie 
@@ -223,9 +258,11 @@ proc sgrender template=SASStudio.Pie
 run;
 
 ods graphics / reset;
+*/
 
 /* Pie chart of the current exposure */
 
+/*
 proc template;
 	define statgraph SASStudio.Pie;
 		begingraph;
@@ -239,15 +276,17 @@ proc template;
 run;
 
 ods graphics / reset width=6.4in height=4.8in imagemap;
+*/
 
+/*
 proc sgrender template=SASStudio.Pie 
 		data=CUREXP.SUMMARY (where=(Company <> "+"));
 run;
 
 ods graphics / reset;
+*/
 
-
-
+/*
 proc print data=potexp.summary; 
 run;
 
@@ -257,10 +296,13 @@ proc sgplot data=potexp.simvalue;
 	yaxis grid;
 run;
 title;
+*/
 
 /* Cash flow analysis */
 
 /* Market value */
+
+/*
 proc print data=gapliq.summary;
 run;
 
