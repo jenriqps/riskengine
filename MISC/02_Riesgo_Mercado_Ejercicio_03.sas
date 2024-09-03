@@ -45,7 +45,19 @@ proc autoreg data=work.transform(keep=date RetJPM) maxit=200 optimizer=nlp;
 	output out=results_garch_2_2 cev=v;
 run;
 
+/*
+Selecting the best model based on the 
+*/
+proc sql;
+	select model, label2, nvalue2
+	from FIT_SUMMARY
+	where label2 = "AICC"
+	having min(nvalue2)=nvalue2
+	;
+quit;
 
+
+* Get the estimated volatility with the champion model;
 proc sql;
 	create table work.var_cond as
 	select a.date
@@ -56,6 +68,7 @@ proc sql;
 quit;
 
 
+* Plot the estimated volatilities;
 ods graphics / reset width=6.4in height=4.8in imagemap noborder;
 
 proc sort data=work.var_cond out=_SeriesPlotTaskData;
