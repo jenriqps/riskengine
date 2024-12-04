@@ -32,14 +32,20 @@ run;
 
 title "Amortización del Crédito";
 proc sgplot data=_SeriesPlotTaskData;
-	series x=YEAR y=BEGPRIN /;
-	series x=YEAR y=ENDPRIN /;
-	series x=YEAR y=PRIN /;
-	series x=YEAR y=PAYMENT /;
-	series x=YEAR y=INTEREST /;
+	needle x=YEAR y=BEGPRIN /;
+	needle x=YEAR y=ENDPRIN /;
 	xaxis grid;
 	yaxis grid label="Monto";
 run;
+
+proc sgplot data=_SeriesPlotTaskData;
+	needle x=YEAR y=PAYMENT /;
+	needle x=YEAR y=INTEREST /;
+	xaxis grid;
+	yaxis grid label="Monto";
+run;
+
+
 title;
 
 ods graphics / reset;
