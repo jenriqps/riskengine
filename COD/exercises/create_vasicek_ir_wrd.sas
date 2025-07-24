@@ -1,4 +1,4 @@
-%macro create_vasicek_ir_wrd(inputds=,cd=,rf=,outds=);
+%MACRO create_vasicek_ir_wrd(inputds=,cd=,rf=,outds=);
 
 /*
 inputds: input data set with the interest rates
@@ -38,4 +38,4 @@ Note: This macro works without sending information to Risk Dimensions
 		solve &rf. / data=work.toforecast estdata=models.cov&rf. sdata=models.s&rf. random=&nsim. seed=321 out=&outds. forecast time=date; 		
 	quit;
 
-%mend;
+%MEND;

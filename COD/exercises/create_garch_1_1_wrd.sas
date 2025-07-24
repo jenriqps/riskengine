@@ -1,4 +1,4 @@
-%macro create_garch_1_1_wrd(inputds=,cd=,rf=,outds=);
+%MACRO create_garch_1_1_wrd(inputds=,cd=,rf=,outds=);
 
 /*
 inputds: input data set with log returns of the risk factor
@@ -44,4 +44,4 @@ Note: This macro works without sending information to Risk Dimensions
 
 
 
-%mend;
+%MEND;
